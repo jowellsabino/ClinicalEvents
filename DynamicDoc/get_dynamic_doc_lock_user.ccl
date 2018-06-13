@@ -40,9 +40,12 @@ FROM
               and alias_pool.display = 'CHB_MRN'
               and alias_pool.code_set = 263)
   , (inner join encntr_alias ea on ea.encntr_id = ce.encntr_id
-	   and ea.encntr_alias_type_cd = 1077 ; CSN
+	   and ea.end_effective_dt_tm > sysdate 
 	   and ea.active_ind = 1)
-where dds.parent_entity_name = "DD_CONTRIBUTION"
+  , (inner join code_value encntr_alias_type on encntr_alias_type.code_value = ea.encntr_alias_type_cd
+              and encntr_alias_type.display = 'FIN NBR'
+              and encntr_alias_type.code_set = 319)
+where dds.parent_entity_name = 'DD_CONTRIBUTION'
        and dds.session_dt_tm > sysdate - 30 /* 30 days should be enough to notice a ddoc is locked */
        and dds.session_user_id =  5273570.00 /* provide user's id */ 
 ORDER BY dds.session_dt_tm desc,ddd.dd_session_data_id
