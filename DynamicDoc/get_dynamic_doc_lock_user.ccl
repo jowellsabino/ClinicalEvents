@@ -1,11 +1,10 @@
 SELECT
     dds.dd_session_id
   , ddd.dd_session_data_id
-
   , Session_held_by=prs.name_full_formatted
   , dds.session_dt_tm
   , ddd.session_data_key
-    , ddd.long_blob_id
+  , ddd.long_blob_id
   , Note_Type=note_type.display 
   , ce.event_title_text
   , ce.event_id
@@ -29,16 +28,13 @@ FROM
             and result_status.code_set = 8)
   , (inner join prsnl pra on pra.person_id = ce.performed_prsnl_id)
   , (inner join person p on p.person_id = ce.person_id)
-  , (inner join person_alias pa
-               on pa.person_id = p.person_id
+  , (inner join person_alias pa on pa.person_id = p.person_id
               and pa.active_ind = 1
               and pa.end_effective_dt_tm > sysdate)
-  , (inner join code_value alias_type
-              on alias_type.code_value = pa.person_alias_type_cd
+  , (inner join code_value alias_type on alias_type.code_value = pa.person_alias_type_cd
               and alias_type.cdf_meaning ='MRN'
               and alias_type.code_set = 4)
-  , (inner join code_value alias_pool
-               on alias_pool.code_value = pa.alias_pool_cd
+  , (inner join code_value alias_pool on alias_pool.code_value = pa.alias_pool_cd
               and alias_pool.display = 'CHB_MRN'
               and alias_pool.code_set = 263)
   , (inner join encntr_alias ea on ea.encntr_id = ce.encntr_id
@@ -46,6 +42,6 @@ FROM
 	   and ea.active_ind = 1)
 where dds.parent_entity_name = "DD_CONTRIBUTION"
        and dds.session_dt_tm > sysdate - 30 /* 30 days should be enough to notice a ddoc is locked */
-       and dds.session_user_id =       5273570.00 /* provide user's id */ 
+       and dds.session_user_id =  5273570.00 /* provide user's id */ 
 ORDER BY dds.session_dt_tm desc,ddd.dd_session_data_id
 WITH maxrec=100,maxtime=300,format(date,";;q")
